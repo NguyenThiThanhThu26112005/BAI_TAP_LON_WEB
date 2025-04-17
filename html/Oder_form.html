@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lịch sử đơn hàng</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const orderListElement = document.getElementById("orderList");
+
+            
+            const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+            
+            function displayOrders() {
+                if (orders.length === 0) {
+                    orderListElement.innerHTML = "<p class='text-center'>Bạn chưa có đơn hàng nào.</p>";
+                } else {
+                    orderListElement.innerHTML = orders.map(order => `
+                        <div class="order-item mb-3">
+                            <h5 class="text-dangerdanger">Mã đơn hàng: ${order.id}</h5>
+                            <p><strong>Họ và tên:</strong> ${order.name}</p>
+                            <p><strong>Số điện thoại:</strong> ${order.phone}</p>
+                            <p><strong>Địa chỉ:</strong> ${order.address}</p>
+                            <p><strong>Hình thức thanh toán:</strong> ${order.paymentMethod}</p>
+                            <p><strong>Tổng tiền:</strong> ${order.totalAmount} VND</p>
+                            <hr/>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            
+            displayOrders();
+        });
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-danger text-center " style="border-bottom: 1px solid rgb(240, 101, 101);">Lịch sử đơn hàng của bạn</h2>
+        <div id="orderList" class="mt-4">
+            
+        </div>
+        <div class="text-center mt-4">
+            <a href="../html/Home.html" class="btn btn-danger">Quay lại trang chủ</a>
+        </div>
+    </div>
+</body>
+</html>

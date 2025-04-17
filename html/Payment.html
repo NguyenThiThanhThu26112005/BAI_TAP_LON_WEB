@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thanh toán</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("paymentForm");
+            const totalAmountElement = document.getElementById("totalAmount");
+            const radioBank = document.getElementById("bank");
+            const radioCOD = document.getElementById("cod");
+            
+            function calculateTotal() {
+                const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                let total = 0;
+                cart.forEach((item) => {
+                    const price = parseFloat(item.price.replace(/\./g, "").replace(/[^\d]/g, ""));
+                    total += price * item.quantity;
+                });
+                totalAmountElement.textContent = total.toLocaleString("vi-VN") + " VND";
+            }
+            
+            radioBank.addEventListener("change", function () {
+                document.getElementById("bankInfo").classList.remove("d-none");
+            });
+
+            radioCOD.addEventListener("change", function () {
+                document.getElementById("bankInfo").classList.add("d-none");
+            });
+
+            function saveOrderToLocalStorage(name, phone, address, paymentMethod, totalAmount) {
+                const order = {
+                    id: Date.now(), 
+                    name: name,
+                    phone: phone,
+                    address: address,
+                    paymentMethod: paymentMethod,
+                    totalAmount: totalAmount,
+                };
+    
+                const orders = JSON.parse(localStorage.getItem("orders")) || [];
+                orders.push(order);
+                localStorage.setItem("orders", JSON.stringify(orders));
+            }
+    
+            
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+    
+                const name = document.getElementById("name").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+                const address = document.getElementById("address").value.trim();
+                const method = document.querySelector('input[name="paymentMethod"]:checked');
+                const totalAmount = totalAmountElement.textContent.replace(" VND", "").replace(/\./g, "");
+    
+                if (!name || !phone || !address || !method) {
+                    alert("Vui lòng điền đầy đủ thông tin và chọn hình thức thanh toán.");
+                    return;
+                }
+                
+                saveOrderToLocalStorage(name, phone, address, method.value, totalAmount);
+                alert("Thanh toán thành công!\nCảm ơn bạn đã mua hàng.");
+                localStorage.removeItem("cart");
+                setTimeout(() => {
+                    window.location.href = "../html/Home.html"; 
+                }, 2000);
+            });
+    
+            calculateTotal();
+        });
+    </script>
+    <style>
+        .form-control{
+            border: 1px solid palevioletred; 
+            width: 100%;
+            padding: 5px;
+            border-radius: 15px;
+            margin: 5px 0px 5px 0px;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h2 class="text-danger text-center">Thông tin thanh toán</h2>
+            <form id="paymentForm" class="mt-4 p-3 " style="background-color: rgb(249, 213, 219); border-radius: 20px;">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="name" placeholder="Nhập họ tên" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Số điện thoại</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="Nhập số điện thoại" />
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Địa chỉ nhận hàng</label>
+                    <textarea class="form-control" id="address" rows="3" placeholder="Nhập địa chỉ..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hình thức thanh toán</label>
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" />
+                    <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
+                    </div>
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="bank" value="bank" />
+                    <label class="form-check-label" for="bank">Chuyển khoản ngân hàng</label>
+                    </div>
+                </div>
+
+                
+                <div id="bankInfo" class="alert alert-info d-none " style="background-color: pink;">
+                    <h6>Thông tin chuyển khoản:</h6>
+                    <p><strong>Ngân hàng:</strong> NamABank</p>
+                    <p><strong>Chủ tài khoản:</strong> NGUYỄN THỊ THANH THƯ</p>
+                    <p><strong>Số tài khoản:</strong> 416156335800002</p>
+                    <p><strong>Nội dung chuyển khoản:</strong> Họ tên + SĐT</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-danger">Tổng tiền: <span id="totalAmount">0 VND</span></h5>
+                </div>
+
+                <div class="text-center d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-outline-danger">Xác nhận thanh toán</button>
+                    <a href="../html/Cart.html" class="btn btn-danger">Huỷ</a>
+                </div>
+                
+                
+            </form>
+        </div>
+</body>
+</html>

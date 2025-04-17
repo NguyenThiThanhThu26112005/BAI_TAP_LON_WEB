@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San pham</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../css/home.css">
+    <script src="../js/product.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const userData = localStorage.getItem("loggedInUser");
+            const loginIcon = document.getElementById("login_icon");
+            const userInfo = document.getElementById("user_info");
+            const userName = document.getElementById("user_name");
+
+            if (userData) {
+                const user = JSON.parse(userData);
+                loginIcon.classList.add("d-none");  
+                userInfo.classList.remove("d-none"); 
+                userName.innerText = "Xin chào, " + user.name; 
+            } else {
+                loginIcon.classList.remove("d-none");  
+                userInfo.classList.add("d-none"); 
+            }
+        });
+
+        
+        function logout() {
+            localStorage.removeItem("loggedInUser");
+            location.reload();  
+        }
+
+        function toggleContactForm() {
+            const form = document.getElementById("contactForm");
+
+            if (form.classList.contains("show")) {
+                form.classList.remove("show");
+                setTimeout(() => {
+                    form.style.display = "none";
+                }, 400);
+            } else {
+                form.style.display = "flex";
+                setTimeout(() => {
+                    form.classList.add("show");
+                }, 10);
+            }
+        }
+    </script>
+    <style>
+        #contactForm {
+            opacity: 0;
+            visibility: hidden;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #contactForm.show {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+        .show-on-hover {
+            transition: all 0.3s ease-in-out;
+            min-width: 200px;
+            z-index: 1000;
+        }
+        .dropdown-item:hover{
+            background-color: pink;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4 p-0">
+                <img src="../img/logo.jpg" alt="" width="200px" height="100px">
+            </div>
+            
+            <div class="col-4 text-end mt-3">
+                <a href="../html/Cart.html">
+                    <img src="../img/gio_hang.png" alt="Giỏ hàng" width="50px">
+                </a>
+                <a href="../html/Login.html" id="login_icon">
+                    <img src="../img/Nguoi.png" alt="Đăng nhập" width="30px">
+                </a>
+
+                <span id="user_info" class="d-none">
+                    <span id="user_name" class="me-2 fw-bold text-danger"></span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="logout()">Đăng xuất</button>
+                </span>
+            </div>
+        </div>
+
+        <div class="row ">
+            <div class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                        <ul class="navbar-nav d-flex flex-row justify-content-start">
+                            <li class="nav-item "><a href="../html/Home.html" class="nav-link">Trang chủ</a></li>
+                            <li class="nav-item"><a href="../html/Info.html" class="nav-link">Thông tin</a></li>
+                            <li class="nav-item"><a href="../html/Product.html" class="nav-link">Sản phẩm</a></li>
+                            <li class="nav-item"><a href="../html/Oder_form.html" class="nav-link">Đặt hàng</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link" onclick="toggleContactForm(); return false;">Liên hệ</a></li>
+                        </ul>
+                    </div>
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-danger" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center p-3">
+            <div class="dropdown text-end" onmouseenter="showDropdown()" onmouseleave="hideDropdown()" style="position: relative;">
+                <button class="btn btn-outline-danger dropdown-toggle" type="button">
+                    Lọc
+                </button>
+                <ul id="filterMenu" class="dropdown-menu show-on-hover" style="display: none; position: absolute;right:0px">
+                    <li><a class="dropdown-item" href="#" onclick="filterProducts('all')">Tất cả sản phẩm</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="filterProducts('cat')">Thức ăn cho chó</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="filterProducts('dog')">Thức ăn cho mèo</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        
+        <div class="row text-center p-3">
+            <h2 class="text-danger p-2">Sản phẩm nổi bật</h2>
+            <div id="featured_products" class="container-fluid" ></div>
+            
+        </div>
+
+        <div class="row text-center p-3">
+            <h2 class="text-danger p-2">Dành cho mèo cưng</h2>
+            <div id="cat_list" class="container-fluid"></div>
+            <button id="loadMorecat" class="btn btn-outline-danger mt-3 ">Xem thêm</button>
+        </div>
+
+        <div class="row text-center p-3">
+            <h2 class="text-danger p-2">Dành cho cún cưng</h2>
+            <div id="dog_list" class="container-fluid"></div>
+            <button id="loadMoredog" class="btn btn-outline-danger mt-3">Xem thêm</button>
+        </div>
+
+        <div class="row text-center mx-auto">
+            <div class="col-md-3 p-2">
+                <h3 class="text-danger">Giới thiệu</h3>
+                <ul>
+                    <li><a href="../html/Info.html">Giới thiệu</a></li>
+                    <li><a href="#" onclick="toggleContactForm(); return false;">Liên hệ</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 p-2">
+                <h3 class="text-danger">Chăm sóc khách hàng</h3>
+                <ul>
+                    <li><a href="#">Chính sách đổi trả</a></li>
+                    <li><a href="#">Chính sách bảo hành</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 p-2">
+                <h3 class="text-danger">Liên hệ</h3>
+                <ul>
+                    <li>Trụ sở chính: 1 Nguyễn Văn Bảo, phường 1, Gò Vấp, tp Hồ Chí Minh</li>
+                    <li>Điện thoại: 01234234234</li>
+                    <li>Email: Petshop.gmail.com</li>
+                    <li>Website: PetYeu</li>
+                </ul>
+            </div>
+            <div class="col-md-3 p-2">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.858169091633!2d106.68426511012773!3d10.822164158304892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174deb3ef536f31%3A0x8b7bb8b7c956157b!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBDw7RuZyBuZ2hp4buHcCBUUC5IQ00!5e0!3m2!1svi!2s!4v1744044197594!5m2!1svi!2s" 
+                    width="100%" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                    
+                </iframe>
+            </div>
+        </div>
+
+        <div id="contactForm" class="p-3 d-flex w-75"style="display: none;
+                                            position: fixed;
+                                            top: 20%;
+                                            left: 50%;
+                                            transform: translateX(-50%);
+                                            z-index: 9999;
+                                            width: 400px;
+                                            border: 1px solid #ccc;
+                                            border-radius: 8px;
+                                            background-color:rgb(238, 218, 225);
+                                            box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+            <div class="mb-3 w-50">
+                <h2 class="text-danger">Thông tin liên hệ</h2>
+                <p>Nếu có bất kì thắc mắc nào, xin hãy liên hệ cho đội ngũ <span class="text-danger">Pet Yêu</span> để có thể nhận được tư vấn tốt nhất.</p>
+                <ul >
+                    <li >
+                        <strong>Địa chỉ:</strong> 1 Nguyễn Văn Bảo, phường 1, Gò Vấp, tp Hồ Chí Minh.
+                    </li>
+                    <li>
+                        <strong>Website:</strong> PetYeu.com
+                    </li>
+                    <li>
+                        <strong>Hotline:</strong> Email: Petshop@gmail.com
+                    </li>
+                </ul>
+            </div>
+            <form class="mt-3 w-50">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Họ tên:</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Nội dung:</label>
+                    <textarea class="form-control" id="message" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger">Gửi</button>
+                <button type="button" class="btn btn-secondary float-end" onclick="toggleContactForm()">Đóng</button>
+            </form>
+        </div>
+
+        
+    </div>
+</body>
+</html>

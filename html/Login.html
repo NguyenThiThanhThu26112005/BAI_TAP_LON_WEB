@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dang ki</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../css/Login.css">
+    <script>
+        window.onload = function() {
+            document.getElementById("login_form").addEventListener("submit", function(e) {
+                e.preventDefault();
+            
+                const phone = document.getElementById("phone_login").value.trim();
+                const password = document.getElementById("password_login").value;
+            
+                document.getElementById("phone-error").style.display = "none";
+                document.getElementById("password-error").style.display = "none";
+            
+                const phoneRegex = /^0\d{9}$/;
+                let isValid = true;
+            
+                if (!phoneRegex.test(phone)) {
+                    document.getElementById("phone-error").style.display = "block";
+                    document.getElementById("phone-error").innerText = "Số điện thoại không hợp lệ.";
+                    isValid = false;
+                }
+            
+                if (password.length < 6) {
+                    document.getElementById("password-error").style.display = "block";
+                    document.getElementById("password-error").innerText = "Mật khẩu quá ngắn.";
+                    isValid = false;
+                }
+            
+                if (!isValid) return;
+            
+                const userList = JSON.parse(localStorage.getItem("userList")) || [];
+                const matchedUser = userList.find(u => u.phone === phone && u.password === password);
+            
+                if (matchedUser) {
+                    localStorage.setItem('loggedInUser', JSON.stringify(matchedUser));
+                    window.location.href = "Home.html"; 
+                } else {
+                    document.getElementById("password-error").style.display = "block";
+                    document.getElementById("password-error").innerText = "Sai số điện thoại hoặc mật khẩu.";
+                }
+            });
+        }
+    </script>
+        
+        
+</head>
+<body>
+    <div class="container">
+        <div id="login-form">
+            <div class="form-title d-flex position-relative">
+                <h1 class="fw-bold text-center text-danger col-10 ">ĐĂNG NHẬP</h1>
+                <a href="../html/Home.html"><button id="close-login" class="btn-close position-absolute" style="top: 10px; right: 10px;"  aria-label="Close"></button></a>
+            </div>
+
+            <p>Nếu bạn có tài khoản, xin vui lòng đăng nhập.</p>
+        
+            <form id="login_form">
+                <div class="mb-3 ">
+                    <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label><br>
+                    <input type="text" class="form-control" id="phone_login" placeholder="Số điện thoại">
+                    <div id="phone-error" class="alert alert-danger" style="display:none;"></div>
+                </div>
+        
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label><br>
+                    <input type="password" class="form-control" id="password_login" placeholder="Mật khẩu">
+                    <div id="password-error" class="alert alert-danger" style="display:none;"></div>
+                </div>
+        
+                <div class="mb-3 text-center">
+                    <button type="submit" class="btn btn-pink">Đăng nhập</button>
+                </div>
+            </form>
+            <div id="loginMessage"></div>
+            <p class="text-center">
+                Bạn chưa có tài khoản? <a href="../html/Signup.html" class="text-danger" id="form_login--res">Đăng ký tại đây</a>
+            </p>
+        
+            <p class="text-center">Hoặc đăng nhập bằng</p>
+        
+            <div class="d-grid">
+                <button class="btn google-btn">
+                    <i class="bi bi-google"></i> Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
