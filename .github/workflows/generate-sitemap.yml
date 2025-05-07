@@ -1,0 +1,29 @@
+name: Generate sitemap
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Generate sitemap
+        uses: cicirello/generate-sitemap@v1
+        with:
+          base-url: https://nguyenthithanhthu26112005.github.io/BAI_TAP_LON_WEB
+          include-html: true
+          include-pdf: false
+          exclude-html-extension: false
+
+      - name: Commit sitemap
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add sitemap.xml
+          git commit -m "Add/update sitemap.xml"
+          git push
